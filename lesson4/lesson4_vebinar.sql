@@ -2,6 +2,7 @@ DROP DATABASE IF EXISTS vk;
 CREATE DATABASE vk;
 USE vk;
 
+-- lesson 3
 DROP TABLE IF EXISTS users;
 CREATE TABLE users(
 	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- id SERIAL PRIMARY KEY,
@@ -9,7 +10,7 @@ CREATE TABLE users(
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(50) NOT NULL UNIQUE,
 	password_hash VARCHAR(150),
-	phon BIGINT UNSIGNED,
+	phone CHAR(11),
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	INDEX users_first_lastname_idx(first_name, last_name)
 );
@@ -103,4 +104,104 @@ CREATE TABLE media (
 	FOREIGN KEY (media_types_id) REFERENCES media_types(id),
 	FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+DROP TABLE IF EXISTS likes;
+CREATE TABLE likes(
+	user_id BIGINT UNSIGNED NOT NULL,
+	media_id BIGINT UNSIGNED NOT NULL,
+	like_type BOOLEAN DEFAULT TRUE,
+	creted_at DATETIME DEFAULT NOW(),
+	PRIMARY KEY (user_id, media_id),
+	FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (media_id) REFERENCES media(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- lesson4
+ALTER TABLE friend_request
+ADD CONSTRAINT sender_not_reciever_check
+CHECK (initiator_user_id != target_user_id);
+
+ALTER TABLE users
+ADD CONSTRAINT phone_check
+CHECK (REGEXP_LIKE(phone, '^[0-9]{11}$'));
+
+ALTER TABLE profiles 
+ADD CONSTRAINT fk_profiles_media
+FOREIGN KEY (photo_id) REFERENCES media (id);
+
+INSERT INTO users(id, first_name, last_name, email, phone, password_hash)
+VALUES (DEFAULT, 'Alex', 'Stepanov', 'alex@mail.com', '89213546566', 'aaa');
+
+INSERT IGNORE INTO users (id, first_name, last_name, email, phone, password_hash)
+VALUES (DEFAULT, 'Alex', 'Stepanov', 'alex@mail.com', '89213546566', 'aaa');
+
+SELECT * FROM users;
+
+INSERT users (first_name, last_name, email, phone)
+VALUES ('Lena', 'Stepanova', 'lena@mail.com', '89213546568');
+
+INSERT users 
+VALUES (DEFAULT, 'Chris', 'Ivanov', 'chris@mail.com', '89213546560', DEFAULT, DEFAULT); -- !
+
+INSERT INTO users (first_name, last_name, email, phone)
+VALUES ('Igor', 'Petrov', 'igor@mail.com', '89213549560'),
+		('Oksana', 'Petrova', 'oksana@mail.com', '89213549561');
+	
+
+INSERT INTO users 
+SET first_name = 'Iren',
+	last_name = 'Sidorova',
+	email = 'iren@mail.com',
+	phone  = '89213541560';
+
+SHOW CREATE TABLE users;
+
+DROP DATABASE IF EXISTS test_data_base;
+CREATE DATABASE test_data_base;
+USE test_data_base;
+
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(145) NOT NULL,
+  `last_name` varchar(145) NOT NULL,
+  `email` varchar(145) NOT NULL,
+  `phone` char(11) NOT NULL,
+  `password_hash` char(65) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `phone` (`phone`),
+  KEY `email_2` (`email`)
+);
+
+INSERT INTO users (first_name, last_name, email, phone)
+VALUES ('Alina', 'Kobrina', 'alina@mail.com', '89210549561');
+
+USE vk;
+
+INSERT users (first_name, last_name, email, phone)
+SELECT first_name, last_name, email, phone FROM test_data_base.users;
+
+SELECT * FROM users;
+
+SELECT first_name FROM users;
+
+SELECT DISTINCT first_name FROM users;
+
+SELECT * FROM users WHERE last_name = 'Petrov';
+
+SELECT * FROM users WHERE id <= 10;
+
+SELECT * FROM users WHERE id BETWEEN 3 AND 7;
+
+SELECT * FROM users WHERE password_hash IS NOT NULL;
+
+SELECT * FROM users LIMIT 4;
+
+SELECT * FROM users ORDER BY id LIMIT 1 OFFSET 3;
+
+SELECT * FROM users ORDER BY id LIMIT 3,1;
+
+
+
 
