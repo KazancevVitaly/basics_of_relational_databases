@@ -33,6 +33,9 @@ CREATE TABLE films(
 	genre_id BIGINT UNSIGNED NOT NULL,
 	company_id BIGINT UNSIGNED NOT NULL,
 	`release` DATE NOT NULL COMMENT 'ПРЕМЬЕРА В МИРЕ',
+	budget BIGINT UNSIGNED NOT NULL COMMENT 'БЮДЖЕТ',
+	world_fees BIGINT UNSIGNED DEFAULT NULL COMMENT 'СБОРЫ В МИРЕ',
+	russian_fees BIGINT UNSIGNED DEFAULT NULL COMMENT 'СБОРЫ В РФ',
 	video_link VARCHAR(50) COMMENT 'ССЫЛКА НА ВИДЕОФАЙЛ',
 	description TEXT NOT NULL COMMENT 'КРАТКОЕ ОПИСАНИЕ ФИЛЬМА',
 	access ENUM('free', 'plus', 'prepaid') COMMENT 'ДОСТУП К ФИЛЬМУ СВОБОДНЫЙ (free), ПО ПОДПИСКЕ (plus) ПЛАТНЫЙ (prepaid)',
@@ -44,9 +47,7 @@ CREATE TABLE films(
 DROP TABLE IF EXISTS persons;
 CREATE TABLE persons(
 	id SERIAL PRIMARY KEY,
-	firstname VARCHAR(50) COMMENT 'ИМЯ',
-	secondname VARCHAR(50) COMMENT 'ОТЧЕСТВО ИЛИ ВТОРОЕ ИМЯ, В РАЗНЫХ СТРАНАХ ПО-РАЗНОМУ',
-	lastname VARCHAR(50) COMMENT 'ФАМИЛИЯ',
+	name VARCHAR(150) COMMENT 'ИМЯ АКТРЕА, РЕЖИССЕРА, ПРОДЮССЕРЕА И Т.Д.',
 	film_profession VARCHAR(50) COMMENT 'ПРОФЕССИЯ: АКТЕР, ПРОДЮССЕР, РЕЖИССЕР И Т.Д.',
 	birthday DATE NOT NULL COMMENT 'ДАТА РОЖДЕНИЯ',
 	deth_day DATE DEFAULT NULL COMMENT 'ДАТА СМЕРТИ, ПО УМОЛЧАНИЮ NULL',
@@ -86,12 +87,19 @@ CREATE TABLE users_films(
 	is_access BOOLEAN DEFAULT FALSE COMMENT 'ДОСТУП К ПРОСМОТРУ ФИЛЬМА ПО УМОЛЧАНИЮ ЗАКРЫТ',
 	viewed INT UNSIGNED DEFAULT 0 COMMENT 'СКОЛЬКО РАЗ ПОСМОТРЕЛ',
 	`comment` TEXT DEFAULT NULL COMMENT 'ОТЗЫВ О ФИЛЬМЕ',
-	raiting TINYINT UNSIGNED DEFAULT 0 COMMENT 'ОЦЕНКА',
+	marker TINYINT UNSIGNED DEFAULT 0 COMMENT 'ОЦЕНКА',
 	FOREIGN KEY (user_id) REFERENCES users(id),
 	FOREIGN KEY (film_id) REFERENCES films(id)
 );
 
-/* 9 */
+/* 9 рейтиинги фильмов */
+DROP TABLE IF EXISTS raiting_films;
+CREATE TABLE raiting_films(
+	film_id BIGINT UNSIGNED NOT NULL,
+	raiting TINYINT UNSIGNED DEFAULT 0 COMMENT 'рейтинг',
+	FOREIGN KEY (film_id) REFERENCES films(id)
+);
+
 /* 10 */
 
 
